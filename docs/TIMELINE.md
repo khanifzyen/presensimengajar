@@ -19,7 +19,7 @@
 
 ### **1.3 Server Setup Tool Development**
 - **Task**: Buat Pure Dart CLI tool untuk Appwrite setup
-- **Output**: Server setup tool dengan migration system
+- **Output**: Server setup tool dengan migration system, dotenv integration, dan environment management
 - **Estimasi**: 3 hari
 
 ### **1.4 Database Schema Design**

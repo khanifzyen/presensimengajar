@@ -121,8 +121,21 @@ bin/
 - Migration system dengan version control
 - Seed data untuk development & production
 - Environment-based configuration
+- Secure credential management dengan dotenv
 - Rollback capabilities
 - CI/CD integration
+
+**Environment Variables (.env):**
+```bash
+# Appwrite Configuration
+APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
+APPWRITE_PROJECT_ID=your_project_id
+APPWRITE_API_KEY=your_api_key
+APPWRITE_DATABASE_ID=your_database_id
+
+# Environment (dev/staging/prod)
+ENVIRONMENT=dev
+```
 
 **Usage:**
 ```bash
@@ -130,7 +143,14 @@ dart bin/server_setup.dart init          # Setup awal
 dart bin/server_setup.dart migrate up     # Run migrations
 dart bin/server_setup.dart seed dev       # Seed development data
 dart bin/server_setup.dart validate       # Validate schema
+dart bin/server_setup.dart --env prod     # Run di production environment
 ```
+
+**Security:**
+- Credentials disimpan di .env file (tidak di version control)
+- .env.example disediakan sebagai template
+- Runtime validation untuk required environment variables
+- Auto-detect environment dari file config
 
 #### **5.3. Library Utama**
 ```bash
