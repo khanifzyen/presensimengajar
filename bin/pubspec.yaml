@@ -1,0 +1,17 @@
+name: server_setup
+description: Server setup tools for Presensi Mengajar App
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  dart_appwrite: ^18.0.0
+  args: ^2.7.0
+  collection: ^1.19.1
+  dotenv: ^4.2.0
+  logger: ^2.6.1
+
+dev_dependencies:
+  lints: ^4.0.0
