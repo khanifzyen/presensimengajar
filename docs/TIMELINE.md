@@ -17,10 +17,20 @@
 - **Output**: pubspec.yaml dengan semua dependencies yang dibutuhkan
 - **Estimasi**: 1 hari
 
-### **1.3 Setup Appwrite**
-- **Task**: Konfigurasi Appwrite project dan collections
-- **Output**: Appwrite project siap digunakan dengan database schema
-- **Estimasi**: 2 hari
+### **1.3 Server Setup Tool Development**
+- **Task**: Buat Pure Dart CLI tool untuk Appwrite setup
+- **Output**: Server setup tool dengan migration system
+- **Estimasi**: 3 hari
+
+### **1.4 Database Schema Design**
+- **Task**: Rancang Appwrite collections dan relationships
+- **Output**: Database schema documentation
+- **Estimasi**: 1 hari
+
+### **1.5 Initial Database Setup**
+- **Task**: Jalankan server setup tool untuk inisialisasi collections
+- **Output**: Appwrite project siap dengan collections terstruktur
+- **Estimasi**: 1 hari
 
 ---
 
@@ -138,7 +148,7 @@
 
 ### **Installation Commands**
 ```bash
-# Core Dependencies
+# Flutter Mobile Dependencies
 flutter pub add riverpod_annotation
 flutter pub add appwrite
 flutter pub add go_router
@@ -151,13 +161,20 @@ flutter pub add permission_handler
 flutter pub add flutter_secure_storage
 flutter pub add logger
 
-# Development Dependencies
+# Flutter Development Dependencies
 flutter pub add --dev riverpod_generator
 flutter pub add --dev build_runner
 flutter pub add --dev freezed
 flutter pub add --dev json_serializable
 flutter pub add --dev mocktail
 flutter pub add --dev very_good_analysis
+
+# Server Setup Tool Dependencies (dart pub add)
+dart pub add appwrite
+dart pub add args
+dart pub add logger
+dart pub add dotenv
+dart pub add collection
 ```
 
 ### **Key Technologies**
@@ -166,6 +183,8 @@ flutter pub add --dev very_good_analysis
 - **Architecture**: Feature-First Clean Architecture
 - **Error Handling**: Sealed Class (Dart 3) + Riverpod AsyncValue
 - **Location**: Geolocator + Google Maps Flutter
+- **Server Setup**: Pure Dart CLI Tool
+- **Database Migrations**: Custom Dart Migration System
 - **Utilities**: Logger for debugging
 
 ---
@@ -175,8 +194,9 @@ flutter pub add --dev very_good_analysis
 ### **Milestone 1 (Minggu 2)**: Base App Ready
 - Setup project dengan Feature-First Clean Architecture selesai
 - Dependencies terinstall dan konfigurasi
+- Server setup tool development selesai
+- Database schema terdefinisi dan ter-setup
 - Autentikasi basic working
-- Struktur database Appwrite siap
 
 ### **Milestone 2 (Minggu 4)**: User Management Complete
 - Sistem auth lengkap

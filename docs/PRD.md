@@ -98,8 +98,41 @@ Aplikasi presensi guru adalah solusi digital berbasis Flutter untuk mengelola ke
 | Permissions | permission_handler |
 | Security | flutter_secure_storage |
 | Utilities | logger |
+| Server Setup | Pure Dart Appwrite SDK |
 
-#### **5.2. Library Utama**
+#### **5.2. Server Setup Tool**
+Pure Dart CLI tool untuk setup dan manajemen Appwrite collections:
+
+**Struktur:**
+```
+bin/
+├── server_setup.dart              # Main CLI entry point
+├── migrations/                    # Database migrations
+│   ├── 001_initial_collections.dart
+│   ├── 002_add_tolerances.dart
+│   └── 003_add_indexes.dart
+└── seeds/                         # Sample data
+    ├── dev_seeds.dart
+    └── prod_seeds.dart
+```
+
+**Fitur:**
+- Collection creation dengan schema validation
+- Migration system dengan version control
+- Seed data untuk development & production
+- Environment-based configuration
+- Rollback capabilities
+- CI/CD integration
+
+**Usage:**
+```bash
+dart bin/server_setup.dart init          # Setup awal
+dart bin/server_setup.dart migrate up     # Run migrations
+dart bin/server_setup.dart seed dev       # Seed development data
+dart bin/server_setup.dart validate       # Validate schema
+```
+
+#### **5.3. Library Utama**
 ```bash
 # Core Dependencies
 flutter pub add riverpod_annotation
@@ -135,7 +168,7 @@ flutter pub add --dev very_good_analysis
 - **Async Operations:** Riverpod AsyncValue/Error handling lebih simple dan terintegrasi dengan Flutter ecosystem
 - **State Management:** Riverpod menyediakan solusi lengkap untuk state, async, dan error handling
 
-#### **5.3. Persyaratan Perangkat**
+#### **5.4. Persyaratan Perangkat**
 - **Minimum OS**: Android 8.0 (API 26) / iOS 13.0
 - **Koneksi**: Wajib terhubung internet
 - **Hardware**: GPS + Kamera
@@ -253,7 +286,7 @@ lib/
 - **Domain-Driven:** Business logic di domain layer murni tanpa framework dependencies
 - **Testability:** Semua komponen dapat di-test dengan dependency injection
 
-#### **6.4. Appwrite Functions**
+#### **6.5. Appwrite Functions**
 | Function | Trigger | Logic |
 |----------|---------|-------|
 | `calculateAttendanceStatus` | Saat check-in/out | Hitung status presensi berdasarkan toleransi |
