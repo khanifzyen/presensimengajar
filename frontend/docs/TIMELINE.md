@@ -52,7 +52,7 @@
 
 ### **3.2 Camera Integration**
 - **Task**: Implementasi pengambilan foto untuk presensi
-- **Output**: Camera service dengan storage ke Appwrite
+- **Output**: Camera service dengan storage ke Cloudinary
 - **Estimasi**: 2 hari
 
 ### **3.3 Attendance Logic**

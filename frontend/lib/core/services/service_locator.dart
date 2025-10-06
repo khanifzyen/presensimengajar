@@ -1,22 +1,31 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
-
-import '../network/dio_interceptor.dart';
-import '../../features/admin/data/datasources/admin_remote_datasource.dart';
-import '../../features/admin/data/repositories/admin_repository_impl.dart';
-import '../../features/admin/domain/repositories/admin_repository.dart';
-import '../../features/admin/domain/usecases/delete_user.dart';
-import '../../features/admin/domain/usecases/get_users.dart';
-import '../../features/admin/presentation/bloc/users_bloc.dart';
-import '../../features/auth/data/datasources/auth_remote_datasource.dart';
-import '../../features/auth/data/repositories/auth_repository_impl.dart';
-import '../../features/auth/domain/repositories/auth_repository.dart';
-import '../../features/auth/domain/usecases/login_user.dart';
-import '../../features/auth/domain/usecases/signup_user.dart';
-import '../../features/auth/presentation/bloc/auth_bloc.dart';
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+import 'package:presensimengajar/core/network/dio_interceptor.dart';
+
+import 'package:presensimengajar/features/admin/data/datasources/admin_remote_datasource.dart';
+import 'package:presensimengajar/features/admin/data/repositories/admin_repository_impl.dart';
+import 'package:presensimengajar/features/admin/domain/repositories/admin_repository.dart';
+import 'package:presensimengajar/features/admin/domain/usecases/delete_user.dart';
+import 'package:presensimengajar/features/admin/domain/usecases/get_users.dart';
+import 'package:presensimengajar/features/admin/presentation/bloc/users_bloc.dart';
+
+import 'package:presensimengajar/features/attendance/data/datasources/attendance_remote_datasource.dart';
+import 'package:presensimengajar/features/attendance/data/datasources/camera_datasource.dart';
+import 'package:presensimengajar/features/attendance/data/datasources/location_datasource.dart';
+import 'package:presensimengajar/features/attendance/data/repositories/attendance_repository_impl.dart';
+import 'package:presensimengajar/features/attendance/domain/repositories/attendance_repository.dart';
+import 'package:presensimengajar/features/attendance/domain/usecases/check_in.dart';
+import 'package:presensimengajar/features/attendance/presentation/bloc/attendance_bloc.dart';
+
+import 'package:presensimengajar/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:presensimengajar/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:presensimengajar/features/auth/domain/repositories/auth_repository.dart';
+import 'package:presensimengajar/features/auth/domain/usecases/login_user.dart';
+import 'package:presensimengajar/features/auth/domain/usecases/signup_user.dart';
+import 'package:presensimengajar/features/auth/presentation/bloc/auth_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -24,44 +33,58 @@ void init() {
   // BLoC
   sl.registerFactory(
     () => AuthBloc(
-      loginUser: sl(),
-      signUpUser: sl(),
-      secureStorage: sl(), // Akan kita tambahkan
+      loginUser: sl<LoginUser>(),
+      signUpUser: sl<SignUpUser>(),
+      secureStorage: sl<FlutterSecureStorage>(),
     ),
   );
-
-sl.registerFactory(
-    () => UsersBloc(getUsers: sl(), deleteUser: sl()),
+  sl.registerFactory(
+    () => AttendanceBloc(checkIn: sl<CheckIn>()),
+  );
+  sl.registerFactory(
+    () => UsersBloc(getUsers: sl<GetUsers>(), deleteUser: sl<DeleteUser>()),
   );
 
   // Use Cases
-  sl.registerLazySingleton(() => LoginUser(sl()));
-  sl.registerLazySingleton(() => SignUpUser(sl()));
-
-  sl.registerLazySingleton(() => GetUsers(sl()));
-  sl.registerLazySingleton(() => DeleteUser(sl()));
+  sl.registerLazySingleton(() => LoginUser(sl<AuthRepository>()));
+  sl.registerLazySingleton(() => SignUpUser(sl<AuthRepository>()));
+  sl.registerLazySingleton(() => CheckIn(sl<AttendanceRepository>()));
+  sl.registerLazySingleton(() => GetUsers(sl<AdminRepository>()));
+  sl.registerLazySingleton(() => DeleteUser(sl<AdminRepository>()));
 
   // Repository
+  sl.registerLazySingleton<AttendanceRepository>(
+    () => AttendanceRepositoryImpl(
+      remoteDataSource: sl<AttendanceRemoteDataSource>(),
+      cameraDataSource: sl<CameraDataSource>(),
+      locationDataSource: sl<LocationDataSource>(),
+    ),
+  );
   sl.registerLazySingleton<AdminRepository>(
-    () => AdminRepositoryImpl(remoteDataSource: sl()),
+    () => AdminRepositoryImpl(remoteDataSource: sl<AdminRemoteDataSource>()),
   );
   sl.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(remoteDataSource: sl()),
+    () => AuthRepositoryImpl(remoteDataSource: sl<AuthRemoteDataSource>()),
   );
 
   // Data Sources
+  sl.registerLazySingleton<AttendanceRemoteDataSource>(
+    () => AttendanceRemoteDataSourceImpl(dio: sl<Dio>()),
+  );
+  sl.registerLazySingleton<LocationDataSource>(() => LocationDataSourceImpl());
+  sl.registerLazySingleton<CameraDataSource>(() => CameraDataSourceImpl());
   sl.registerLazySingleton<AdminRemoteDataSource>(
-    () => AdminRemoteDataSourceImpl(dio: sl()),
+    () => AdminRemoteDataSourceImpl(dio: sl<Dio>()),
   );
   sl.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(dio: sl()),
+    () => AuthRemoteDataSourceImpl(dio: sl<Dio>()),
   );
 
   // External
   sl.registerLazySingleton(() {
     final dio = Dio();
     dio.options.baseUrl = dotenv.env['BASE_URL']!;
-    dio.interceptors.add(JwtInterceptor(secureStorage: sl()));
+    dio.interceptors.add(JwtInterceptor(secureStorage: sl<FlutterSecureStorage>()));
     return dio;
   });
   sl.registerLazySingleton(() => const FlutterSecureStorage());

@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/signup_page.dart';
+import '../../features/attendance/presentation/pages/check_in_page.dart';
 import '../../features/admin/presentation/pages/users_page.dart';
 import '../../common/pages/welcome_page.dart';
 
@@ -23,6 +24,10 @@ final router = GoRouter(
     GoRoute(
       path: '/admin/users',
       builder: (context, state) => const UsersPage(),
+    ),
+    GoRoute(
+      path: '/home',
+      builder: (context, state) => const CheckInPage(),
     ),
     // TODO: Add home route and redirect logic based on auth state
   ],

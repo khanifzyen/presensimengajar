@@ -64,4 +64,4 @@ Proyek ini dikelola sebagai monorepo yang terdiri dari dua bagian utama:
 
 ## 📝 Status Proyek
 
-Saat ini, **Fase 1: Setup Proyek & Arsitektur** telah selesai. Fondasi untuk frontend dan backend telah dibangun dan siap untuk pengembangan fitur.
+Saat ini, **Fase 2: Autentikasi & Manajemen Pengguna** telah selesai. Fondasi untuk frontend dan backend, beserta alur registrasi, login, dan manajemen pengguna oleh admin telah selesai diimplementasikan.
