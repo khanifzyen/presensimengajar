@@ -142,6 +142,7 @@
 flutter pub add flutter_bloc
 flutter pub add dio
 flutter pub add go_router
+flutter pub add flutter_dotenv
 flutter pub add freezed_annotation
 flutter pub add geolocator
 flutter pub add google_maps_flutter

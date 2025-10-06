@@ -104,6 +104,7 @@ Aplikasi presensi guru adalah solusi digital berbasis Flutter untuk mengelola ke
 flutter pub add flutter_bloc
 flutter pub add dio
 flutter pub add go_router
+flutter pub add flutter_dotenv
 flutter pub add freezed_annotation
 flutter pub add geolocator
 flutter pub add google_maps_flutter
@@ -132,6 +133,7 @@ flutter pub add --dev very_good_analysis
 - **JWT:** Standar untuk otentikasi aman antara aplikasi Flutter dan backend API.
 - **Dio:** HTTP client untuk Flutter, digunakan untuk membuat request ke backend API.
 - **BLoC:** Mengelola state di aplikasi Flutter, memisahkan logika bisnis dari UI.
+- **flutter_dotenv:** Mengelola variabel lingkungan (seperti base URL API) melalui file `.env`.
 
 **Catatan Arsitektur:**
 - **Pemisahan Penuh:** Frontend (Flutter) dan Backend (NestJS) adalah dua aplikasi yang sepenuhnya terpisah.
