@@ -87,23 +87,22 @@ Aplikasi presensi guru adalah solusi digital berbasis Flutter untuk mengelola ke
 | Komponen | Teknologi |
 |----------|-----------|
 | Frontend | Flutter (Dart 3) |
-| State Management | Riverpod Generator |
-| Backend | Appwrite (Serverless) |
-| Database | Appwrite Collections |
-| Storage | Appwrite Storage |
+| State Management | BLoC / flutter_bloc |
+| Backend Framework | NestJS |
+| ORM | Prisma |
+| Database | Neon (Postgres) |
+| File Storage | Cloudinary |
+| Hosting | Render.com |
+| Authentication | JWT (JSON Web Tokens) |
+| API Client (Flutter) | Dio |
 | Routing | go_router |
-| Error Handling | Sealed Class (Dart 3) |
 | Peta | Google Maps Flutter |
-| Image Processing | image_picker |
-| Permissions | permission_handler |
-| Security | flutter_secure_storage |
-| Utilities | logger |
 
 #### **5.2. Library Utama**
 ```bash
-# Core Dependencies
-flutter pub add riverpod_annotation
-flutter pub add appwrite
+# Core Flutter Dependencies
+flutter pub add flutter_bloc
+flutter pub add dio
 flutter pub add go_router
 flutter pub add freezed_annotation
 flutter pub add geolocator
@@ -115,25 +114,29 @@ flutter pub add flutter_secure_storage
 flutter pub add logger
 
 # Development Dependencies
-flutter pub add --dev riverpod_generator
 flutter pub add --dev build_runner
 flutter pub add --dev freezed
 flutter pub add --dev json_serializable
 flutter pub add --dev mocktail
+flutter pub add --dev bloc_test
 flutter pub add --dev very_good_analysis
 ```
 
-**Catatan:** Menggunakan `flutter pub add` tanpa versi spesifik untuk menghindari dependency hell. Versi library akan ditentukan oleh pub.dev resolver untuk kompatibilitas optimal.
+**Catatan:** Arsitektur ini memisahkan frontend dan backend. Frontend Flutter berkomunikasi dengan Backend API melalui request HTTP.
 
-**Penjelasan Library:**
-- **json_serializable:** Cukup untuk JSON serialization, digunakan bersama freezed untuk data classes
-- **Sealed Class (Dart 3):** Digunakan untuk Result pattern dengan Success/Failure state di use cases
-- **Riverpod:** Menangani async operations, state management, dan error handling di presentation layer
+**Penjelasan Komponen & Library:**
+- **NestJS:** Framework Node.js yang terstruktur untuk membangun API. Menggunakan TypeScript secara default.
+- **Prisma:** ORM modern untuk interaksi dengan database. Menyediakan *type-safety* dan tool migrasi yang kuat.
+- **Neon:** Database serverless Postgres untuk menyimpan semua data aplikasi.
+- **Cloudinary:** Layanan untuk menyimpan dan mengelola file gambar (foto presensi).
+- **JWT:** Standar untuk otentikasi aman antara aplikasi Flutter dan backend API.
+- **Dio:** HTTP client untuk Flutter, digunakan untuk membuat request ke backend API.
+- **BLoC:** Mengelola state di aplikasi Flutter, memisahkan logika bisnis dari UI.
 
 **Catatan Arsitektur:**
-- **Error Handling:** Sealed Class + Riverpod AsyncValue sudah cukup untuk kebutuhan aplikasi
-- **Async Operations:** Riverpod AsyncValue/Error handling lebih simple dan terintegrasi dengan Flutter ecosystem
-- **State Management:** Riverpod menyediakan solusi lengkap untuk state, async, dan error handling
+- **Pemisahan Penuh:** Frontend (Flutter) dan Backend (NestJS) adalah dua aplikasi yang sepenuhnya terpisah.
+- **Komunikasi via API:** Flutter tidak pernah terhubung langsung ke database. Semua interaksi data (termasuk upload foto) dimediasi oleh backend API.
+- **Keamanan:** JWT memastikan bahwa hanya pengguna yang terautentikasi yang dapat mengakses endpoint API yang dilindungi.
 
 #### **5.3. Persyaratan Perangkat**
 - **Minimum OS**: Android 8.0 (API 26) / iOS 13.0
@@ -159,7 +162,7 @@ lib/
 │   │   └── presentation/
 │   │       ├── pages/
 │   │       ├── widgets/
-│   │       ├── providers/
+│   │       ├── bloc/
 │   │       └── routes/
 │   ├── attendance/
 │   │   ├── data/
@@ -190,9 +193,9 @@ lib/
 │   │       ├── widgets/
 │   │       │   ├── attendance_status_widget.dart
 │   │       │   └── location_map_widget.dart
-│   │       ├── providers/
-│   │       │   ├── attendance_provider.dart
-│   │       │   └── location_provider.dart
+│   │       ├── bloc/
+│   │       │   ├── attendance_bloc.dart
+│   │       │   └── location_bloc.dart
 │   │       └── routes/
 │   ├── admin/
 │   │   ├── data/
@@ -221,7 +224,7 @@ lib/
 ┌─────────────────────────────────────┐
 │          PRESENTATION               │
 │  ┌─────────────┐  ┌─────────────┐   │
-│  │   Pages     │  │  Providers  │   │
+│  │   Pages     │  │BLoCs / Cubits│   │
 │  └─────────────┘  └─────────────┘   │
 │  ┌─────────────┐  ┌─────────────┐   │
 │  │  Widgets    │  │   Routes    │   │
@@ -253,12 +256,17 @@ lib/
 - **Domain-Driven:** Business logic di domain layer murni tanpa framework dependencies
 - **Testability:** Semua komponen dapat di-test dengan dependency injection
 
-#### **6.4. Appwrite Functions**
-| Function | Trigger | Logic |
+#### **6.4. Backend API Endpoints**
+Backend API yang di-hosting di Render.com akan mengekspos beberapa endpoint utama. Logika yang sebelumnya ditangani oleh Appwrite Functions kini berada di sini.
+
+| Endpoint | Metode | Deskripsi |
 |----------|---------|-------|
-| `calculateAttendanceStatus` | Saat check-in/out | Hitung status presensi berdasarkan toleransi |
-| `validateLocation` | Saat check-in | Validasi radius + deteksi mock location |
-| `generateReport` | Permintaan admin | Buat PDF/Excel dari data presensi |
+| `/auth/login` | POST | Mengautentikasi pengguna dan mengembalikan JWT. |
+| `/attendance/check-in` | POST | Memproses presensi masuk, termasuk validasi lokasi dan upload foto. |
+| `/attendance/check-out` | POST | Memproses presensi keluar. |
+| `/attendance/history` | GET | Mengambil riwayat presensi untuk pengguna. |
+| `/admin/schedules` | POST | (Admin) Membuat atau mengubah jadwal. |
+| `/admin/reports` | GET | (Admin) Menghasilkan laporan presensi. |
 
 ---
 
@@ -267,24 +275,22 @@ lib/
 ```mermaid
 sequenceDiagram
     participant G as Guru
-    participant A as Aplikasi
-    participant F as Appwrite Functions
-    participant DB as Database
+    participant A as Aplikasi Flutter
+    participant API as Backend API (Render)
+    participant DB as Neon DB
 
     G->>A: Tekan "Check-In"
-    A->>F: validateLocation(scheduleId, location)
-    F->>DB: Ambil data jadwal
-    F->>F: Hitung jarak + cek mock location
-    alt Valid
-        F-->>A: true
-        A->>G: Buka halaman kamera
+    A->>API: POST /attendance/check-in (location, scheduleId)
+    API->>DB: Ambil data jadwal & validasi lokasi
+    alt Lokasi Valid
+        API-->>A: Respon sukses, minta foto
         G->>A: Ambil foto
-        A->>DB: Simpan presensi
-        A->>F: calculateAttendanceStatus()
-        F->>DB: Update status
-        F-->>A: "Hadir" / "Terlambat"
-    else Tidak Valid
-        F-->>A: false
+        A->>API: Upload foto
+        API->>DB: Simpan data presensi (termasuk URL foto)
+        API-->>A: Respon "Hadir" / "Terlambat"
+        A->>G: Tampilkan status
+    else Lokasi Tidak Valid
+        API-->>A: Respon error
         A->>G: "Anda di luar area presensi"
     end
 ```
@@ -326,7 +332,9 @@ sequenceDiagram
 - Guru akan secara proaktif membuka aplikasi untuk presensi
 
 #### **Ketergantungan:**
-- Layanan Appwrite (database, storage, functions)
+- Layanan hosting backend (Render.com)
+- Layanan database (Neon)
+- Layanan file storage (Cloudinary)
 - Paket data internet untuk guru
 - Perangkat GPS yang akurat
 - Google Maps API untuk visualisasi peta
@@ -338,9 +346,10 @@ sequenceDiagram
 |--------|----------|
 | **Mock Location** | Pemalsuan lokasi GPS via aplikasi pihak ketiga |
 | **Toleransi** | Batas waktu keterlambatan/pulang cepat yang diizinkan |
-| **Sesi Pengajaran** | Satu periode mengajar (misal: Matematika jam 07:00-08:30) |
-| **Shift Dinamis** | Jadwal yang berbeda per hari/hari tertentu |
-| **Sealed Class** | Tipe data yang membatasi subclass (Dart 3) |
+| **JWT** | *JSON Web Token*. Standar token untuk otentikasi antar sistem (Flutter & Backend API). |
+| **Neon** | Platform database serverless Postgres. |
+| **Render** | Platform cloud untuk hosting aplikasi backend. |
+| **Cloudinary** | Platform untuk manajemen dan penyimpanan media (gambar/video). |
 | **Visualisasi Radius** | Tampilan peta dengan lingkaran area presensi |
 
 ---

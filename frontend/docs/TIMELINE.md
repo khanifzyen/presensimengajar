@@ -17,10 +17,10 @@
 - **Output**: pubspec.yaml dengan semua dependencies yang dibutuhkan
 - **Estimasi**: 1 hari
 
-### **1.3 Setup Appwrite**
-- **Task**: Konfigurasi Appwrite project dan collections
-- **Output**: Appwrite project siap digunakan dengan database schema
-- **Estimasi**: 2 hari
+### **1.3 Setup Backend & Database**
+- **Task**: Inisialisasi proyek backend NestJS, koneksikan ke database Neon, dan siapkan akun Cloudinary.
+- **Output**: Proyek backend API siap untuk pengembangan, terkoneksi dengan database, dan siap untuk upload file.
+- **Estimasi**: 3 hari
 
 ---
 
@@ -138,9 +138,9 @@
 
 ### **Installation Commands**
 ```bash
-# Core Dependencies
-flutter pub add riverpod_annotation
-flutter pub add appwrite
+# Core Flutter Dependencies
+flutter pub add flutter_bloc
+flutter pub add dio
 flutter pub add go_router
 flutter pub add freezed_annotation
 flutter pub add geolocator
@@ -152,21 +152,23 @@ flutter pub add flutter_secure_storage
 flutter pub add logger
 
 # Development Dependencies
-flutter pub add --dev riverpod_generator
 flutter pub add --dev build_runner
 flutter pub add --dev freezed
 flutter pub add --dev json_serializable
 flutter pub add --dev mocktail
+flutter pub add --dev bloc_test
 flutter pub add --dev very_good_analysis
 ```
 
 ### **Key Technologies**
-- **State Management**: Riverpod Generator
-- **Backend**: Appwrite (Serverless)
-- **Architecture**: Feature-First Clean Architecture
-- **Error Handling**: Sealed Class (Dart 3) + Riverpod AsyncValue
+- **State Management**: BLoC / flutter_bloc
+- **Backend**: NestJS on Render.com
+- **ORM**: Prisma
+- **Database**: Neon (Postgres)
+- **Storage**: Cloudinary
+- **Architecture**: Feature-First Clean Architecture (Flutter) + Modular REST API (NestJS)
+- **Error Handling**: Sealed Class for BLoC states
 - **Location**: Geolocator + Google Maps Flutter
-- **Utilities**: Logger for debugging
 
 ---
 
@@ -175,8 +177,8 @@ flutter pub add --dev very_good_analysis
 ### **Milestone 1 (Minggu 2)**: Base App Ready
 - Setup project dengan Feature-First Clean Architecture selesai
 - Dependencies terinstall dan konfigurasi
+- Koneksi ke database Neon dan setup backend awal selesai
 - Autentikasi basic working
-- Struktur database Appwrite siap
 
 ### **Milestone 2 (Minggu 4)**: User Management Complete
 - Sistem auth lengkap
@@ -210,11 +212,13 @@ flutter pub add --dev very_good_analysis
 
 ### **Development Team**
 - 1 Flutter Developer (Full-time)
+- 1 Backend Developer (Part-time, untuk setup awal dan maintenance)
 - 1 UI/UX Designer (Part-time)
-- 1 Backend Support (Appwrite setup)
 
 ### **Infrastructure**
-- Appwrite cloud account
+- Render account
+- Neon account
+- Cloudinary account
 - Google Maps API key
 - Test devices (Android/iOS)
 
