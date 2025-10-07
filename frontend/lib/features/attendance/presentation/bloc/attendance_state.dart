@@ -28,3 +28,32 @@ class AttendanceFailure extends AttendanceState {
   @override
   List<Object> get props => [message];
 }
+
+class AttendanceScheduleLoaded extends AttendanceState {
+  final ScheduleEntity schedule;
+
+  const AttendanceScheduleLoaded(this.schedule);
+
+  @override
+  List<Object> get props => [schedule];
+}
+
+class ActiveCheckInFound extends AttendanceState {
+  final int attendanceId;
+
+  const ActiveCheckInFound(this.attendanceId);
+
+  @override
+  List<Object> get props => [attendanceId];
+}
+
+class NoActiveCheckIn extends AttendanceState {}
+
+class CheckOutSuccess extends AttendanceState {
+  final String message;
+
+  const CheckOutSuccess({this.message = 'Check-out successful!'});
+
+  @override
+  List<Object> get props => [message];
+}

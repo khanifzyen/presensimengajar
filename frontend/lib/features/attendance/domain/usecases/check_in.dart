@@ -5,7 +5,7 @@ class CheckIn {
 
   CheckIn(this.repository);
 
-  Future<void> call() {
-    return repository.checkIn();
+  Future<void> call({required int scheduleId}) {
+    return repository.checkIn(scheduleId: scheduleId);
   }
 }
