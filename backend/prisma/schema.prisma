@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,7 +7,69 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ENUMS
+model User {
+  id                 Int                @id @default(autoincrement())
+  email              String             @unique
+  password           String
+  name               String
+  profilePhotoUrl    String?
+  role               Role               @default(TEACHER)
+  attendanceCategory AttendanceCategory
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  attendanceRecords  AttendanceRecord[]
+  approvedLeaves     LeaveRequest[]     @relation("ApprovedByAdmin")
+  leaveRequests      LeaveRequest[]
+  schedules          Schedule[]
+}
+
+model Schedule {
+  id                Int                @id @default(autoincrement())
+  name              String
+  startTime         DateTime
+  endTime           DateTime
+  latitude          Float
+  longitude         Float
+  radius            Int
+  assignedToId      Int
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  attendanceRecords AttendanceRecord[]
+  assignedTo        User               @relation(fields: [assignedToId], references: [id])
+}
+
+model AttendanceRecord {
+  id                Int              @id @default(autoincrement())
+  checkInTime       DateTime
+  checkInPhotoUrl   String
+  checkInLatitude   Float
+  checkInLongitude  Float
+  checkOutTime      DateTime?
+  checkOutPhotoUrl  String?
+  checkOutLatitude  Float?
+  checkOutLongitude Float?
+  status            AttendanceStatus
+  userId            Int
+  scheduleId        Int?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  schedule          Schedule?        @relation(fields: [scheduleId], references: [id])
+  user              User             @relation(fields: [userId], references: [id])
+}
+
+model LeaveRequest {
+  id           Int         @id @default(autoincrement())
+  reason       String
+  startDate    DateTime
+  endDate      DateTime
+  status       LeaveStatus @default(PENDING)
+  userId       Int
+  approvedById Int?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  approvedBy   User?       @relation("ApprovedByAdmin", fields: [approvedById], references: [id])
+  user         User        @relation(fields: [userId], references: [id])
+}
 
 enum Role {
   TEACHER
@@ -18,8 +77,8 @@ enum Role {
 }
 
 enum AttendanceCategory {
-  PENGAJARAN // Multi-sesi per hari
-  KEHADIRAN_KERJA // Sekali check-in/out per hari
+  PENGAJARAN
+  KEHADIRAN_KERJA
 }
 
 enum AttendanceStatus {
@@ -34,84 +93,4 @@ enum LeaveStatus {
   PENDING
   APPROVED
   REJECTED
-}
-
-// MODELS
-
-model User {
-  id                 Int                @id @default(autoincrement())
-  email              String             @unique
-  password           String
-  name               String
-  profilePhotoUrl    String?
-  role               Role               @default(TEACHER)
-  attendanceCategory AttendanceCategory
-
-  // Relations
-  schedules          Schedule[]
-  attendanceRecords  AttendanceRecord[]
-  leaveRequests      LeaveRequest[]
-  approvedLeaves     LeaveRequest[]     @relation("ApprovedByAdmin")
-
-  createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @updatedAt
-}
-
-model Schedule {
-  id        Int      @id @default(autoincrement())
-  name      String
-  startTime DateTime
-  endTime   DateTime
-  latitude  Float
-  longitude Float
-  radius    Int // dalam meter
-
-  // Relations
-  assignedTo   User @relation(fields: [assignedToId], references: [id])
-  assignedToId Int
-
-  attendanceRecords AttendanceRecord[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model AttendanceRecord {
-  id               Int              @id @default(autoincrement())
-  checkInTime      DateTime
-  checkInPhotoUrl  String
-  checkInLatitude  Float
-  checkInLongitude Float
-  checkOutTime     DateTime?
-  checkOutPhotoUrl String?
-  checkOutLatitude Float?
-  checkOutLongitude Float?
-  status           AttendanceStatus
-
-  // Relations
-  user     User @relation(fields: [userId], references: [id])
-  userId   Int
-  schedule Schedule? @relation(fields: [scheduleId], references: [id])
-  scheduleId Int?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model LeaveRequest {
-  id        Int         @id @default(autoincrement())
-  reason    String
-  startDate DateTime
-  endDate   DateTime
-  status    LeaveStatus @default(PENDING)
-
-  // Relations
-  user   User @relation(fields: [userId], references: [id])
-  userId Int
-
-  approvedBy   User? @relation("ApprovedByAdmin", fields: [approvedById], references: [id])
-  approvedById Int?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
