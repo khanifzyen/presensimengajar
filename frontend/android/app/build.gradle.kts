@@ -5,10 +5,13 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-val localProperties = java.util.Properties()
+import java.util.Properties
+import java.io.FileInputStream
+
+val localProperties = Properties()
 val localPropertiesFile = rootProject.file("../.env")
 if (localPropertiesFile.exists()) {
-    localProperties.load(java.io.FileInputStream(localPropertiesFile))
+    localProperties.load(FileInputStream(localPropertiesFile))
 }
 
 

@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:logger/logger.dart';
 
 class LiveCameraDataSource {
   CameraController? _controller;
@@ -28,7 +29,7 @@ class LiveCameraDataSource {
       await _controller!.initialize();
     } catch (e) {
       // If an error occurs, log the error and rethrow.
-      print('Error initializing camera: $e');
+      Logger().e('Error initializing camera: $e');
       rethrow;
     }
   }
@@ -45,7 +46,7 @@ class LiveCameraDataSource {
       final XFile file = await _controller!.takePicture();
       return file;
     } catch (e) {
-      print('Error taking picture: $e');
+      Logger().e('Error taking picture: $e');
       rethrow;
     }
   }

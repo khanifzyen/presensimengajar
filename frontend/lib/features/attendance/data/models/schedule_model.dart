@@ -7,6 +7,8 @@ class ScheduleModel extends ScheduleEntity {
     required super.latitude,
     required super.longitude,
     required super.radius,
+    super.startTime,
+    super.endTime,
   });
 
   factory ScheduleModel.fromJson(Map<String, dynamic> json) {
@@ -16,6 +18,8 @@ class ScheduleModel extends ScheduleEntity {
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
       radius: json['radius'],
+      startTime: json['startTime'] != null ? DateTime.parse(json['startTime']) : null,
+      endTime: json['endTime'] != null ? DateTime.parse(json['endTime']) : null,
     );
   }
 }

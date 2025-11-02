@@ -6,6 +6,8 @@ class ScheduleEntity extends Equatable {
   final double latitude;
   final double longitude;
   final int radius;
+  final DateTime? startTime;
+  final DateTime? endTime;
 
   const ScheduleEntity({
     required this.id,
@@ -13,8 +15,10 @@ class ScheduleEntity extends Equatable {
     required this.latitude,
     required this.longitude,
     required this.radius,
+    this.startTime,
+    this.endTime,
   });
 
   @override
-  List<Object?> get props => [id, name, latitude, longitude, radius];
+  List<Object?> get props => [id, name, latitude, longitude, radius, startTime, endTime];
 }

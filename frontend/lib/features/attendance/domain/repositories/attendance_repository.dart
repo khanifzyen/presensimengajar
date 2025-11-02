@@ -1,4 +1,3 @@
-import 'package:image_picker/image_picker.dart';
 import '../entities/schedule_entity.dart';
 
 abstract class AttendanceRepository {

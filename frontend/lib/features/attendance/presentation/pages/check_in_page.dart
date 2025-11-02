@@ -212,7 +212,7 @@ class _CheckInMapViewState extends State<CheckInMapView> {
         circleId: const CircleId('school_radius'),
         center: scheduleLocation,
         radius: widget.schedule.radius.toDouble(),
-        fillColor: Colors.blue.withOpacity(0.2),
+        fillColor: Colors.blue.withValues(alpha: 0.2),
         strokeColor: Colors.blue,
         strokeWidth: 2,
       )
